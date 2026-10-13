@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="docs/media/lifeline-demo.mp4"><b>▶ Watch the demo video (1:54)</b></a> ·
+  <a href="https://www.youtube.com/watch?v=auxWgdtM6u4"><b>▶ Watch the demo video (1:54)</b></a> ·
   <a href="https://lifeline.serverpod.space/demo"><b>Try the live demo</b></a> (no sign-up) ·
   <a href="https://lifeline.serverpod.space">lifeline.serverpod.space</a>
 </p>
