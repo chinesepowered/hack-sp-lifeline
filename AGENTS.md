@@ -1,7 +1,31 @@
-# Flutter & Serverpod project
+# Lifeline: Flutter & Serverpod project
 
 This project is a Flutter app (frontend) backed by a Serverpod server (backend). Always build the app's backend with Serverpod.
 Build for multiple users, use Serverpod's built-in authentication, which is already set up in `lib/server.dart`.
+
+## About the app
+
+Lifeline is a daily voice check-in for older adults who live alone. A tablet in their home (the "companion") greets them by name in an ElevenLabs voice at the times their family picks, and they answer with a big button or by talking. Spoken answers are transcribed with ElevenLabs Scribe and triaged by rules. If nobody answers, Lifeline asks again and then alerts the whole care circle. Family members watch a live dashboard, acknowledge alerts ("I'm on it") and send messages that are spoken on the tablet. The judge-facing overview is in `README.md`.
+
+Flutter routes (`lifeline_flutter/lib/app.dart`): `/` landing page, `/demo` (anonymous sign-in, then `createDemo`: Rose's tablet and Sam's dashboard side by side), `/family` (sign in, create or join a circle, dashboard), `/tablet` (pair with a 6-digit code).
+
+Server code (`lifeline_server/lib/src/`):
+
+- `models/`: tables `circle`, `circle_member`, `check_in_slot`, `check_in` (unique per circle and occurrence), `alert`, `circle_event` (activity feed), `utterance` (what the tablet says), `companion_device` (hashed token), `voice_clip`; DTOs `CircleSnapshot` and `CompanionState`; `LifelineException`.
+- `circles/`: `CircleEndpoint` for family members (`requireLogin`, membership checks in `CircleAccess`), `CircleService`, `Snapshots`.
+- `companion/`: `CompanionEndpoint` for the tablet, authenticated by device token, not by user.
+- `checkins/`: `CheckInService` (start, respond, two-stage escalation, acknowledge), `Phrases` (every spoken line), `Schedules`, `LocalScheduler` and `Sweeper`, future calls.
+- `voice/`: `VoiceService` caches each ElevenLabs clip once in public storage, served by `VoiceRoute` at `/voice/<sha256>.mp3`. It returns null without an API key, and the app then falls back to browser speech. The key is the password `elevenLabsApiKey` (`SERVERPOD_PASSWORD_elevenLabsApiKey` locally).
+- `triage/`: `TriageEngine`, rule-based and unit-tested.
+- `realtime/`: `CircleChannel`. Every state change must call `CircleChannel.notify`; the `watch()` streams then push a full snapshot.
+
+Conventions:
+
+- Schedule work only through `Schedules`. It uses future calls when `config.futureCall.enabled`, and otherwise `LocalScheduler` plus a once-a-minute `Sweeper` (Serverpod Cloud's Starter plan disables future calls). Keep every job idempotent, because both paths can run a job more than once.
+- Escalation stage 1 runs after `graceSeconds` (missed alert, re-prompt) and stage 2 after `secondGraceSeconds` more (urgent "not responding" alert). Demo circles use 30 + 20 seconds and are deleted after 12 hours.
+- The Flutter `LiveStream` reconnects streams with backoff and falls back to polling `circle.snapshot` / `companion.state` where WebSockets are blocked.
+
+Deployment: Serverpod Cloud project `lifeline` (<https://lifeline.serverpod.space>). The pre-deploy hooks in `lifeline_server/scloud.yaml` run `serverpod generate` and build the Flutter web app into `lifeline_server/web/app`. Deploying is the user's decision.
 
 The user starts the server and Flutter app with `serverpod start`. There is no need to check if the server is running: make the changes and call the `serverpod` MCP tools as needed. If the server is not running, an informative error message will be received from the MCP server. Then STOP and ask the user to start it. NEVER start the server yourself. The Flutter app is started along with it, or can be launched from the MCP tool `spawn_flutter_app`.
 
@@ -46,5 +70,3 @@ If the user asks you to test the app:
 3. Use `flutter_driver` (`dart` MCP) to navigate through the app
 
 The app is launched from `lifeline_flutter/lib/driver.dart`, which starts the Flutter driver extension with text entry emulation turned off so the app stays usable by hand. To let the driver type, set `enableTextEntryEmulation: true` there and `hot_restart` the app.
-
-IMPORTANT: After building the first version of the app, update this AGENTS.md file with information about the app we're building. KEEP the info about the MCP server and the checklist. Remove this paragraph.
