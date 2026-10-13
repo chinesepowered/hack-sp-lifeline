@@ -2,11 +2,11 @@ import 'package:serverpod/serverpod.dart';
 
 import '../circles/circle_access.dart';
 import '../common/local_time.dart';
-import '../generated/future_calls.dart';
 import '../generated/protocol.dart';
 import '../realtime/circle_channel.dart';
 import '../voice/voice_service.dart';
 import 'phrases.dart';
+import 'schedules.dart';
 
 /// The heart of Lifeline: starting check-ins, recording answers, escalating
 /// when nobody answers, and keeping the family informed in real time.
@@ -16,10 +16,6 @@ abstract final class CheckInService {
     CheckInStatus.missed,
     CheckInStatus.unresponsive,
   };
-
-  /// Identifier shared by both escalation stages, so a single cancel stops
-  /// whichever stage is scheduled.
-  static String escalationId(int checkInId) => 'escalate-check-in-$checkInId';
 
   /// The latest check-in if it is still waiting for an answer.
   static Future<CheckIn?> activeCheckIn(
@@ -128,13 +124,12 @@ abstract final class CheckInService {
     await CircleChannel.notify(session, circleId, 'check-in-started');
 
     // Escalate if nobody answers within the grace period.
-    await session.serverpod.futureCalls
-        .callWithDelay(
-          Duration(seconds: circle.graceSeconds),
-          identifier: escalationId(checkIn.id!),
-        )
-        .escalation
-        .noResponse(checkIn.id!, 1);
+    await Schedules.escalateLater(
+      session,
+      checkInId: checkIn.id!,
+      stage: 1,
+      delay: Duration(seconds: circle.graceSeconds),
+    );
 
     await _say(
       session,
@@ -192,7 +187,7 @@ abstract final class CheckInService {
     });
 
     if (answered != null) {
-      await session.serverpod.futureCalls.cancel(escalationId(answered.id!));
+      await Schedules.cancelEscalation(session, answered.id!);
       await _autoResolveUnanswered(session, circle, answered);
     }
 
@@ -362,13 +357,12 @@ abstract final class CheckInService {
       await _refreshStatus(session, circleId);
       await CircleChannel.notify(session, circleId, 'missed');
 
-      await session.serverpod.futureCalls
-          .callWithDelay(
-            Duration(seconds: circle.secondGraceSeconds),
-            identifier: escalationId(checkInId),
-          )
-          .escalation
-          .noResponse(checkInId, 2);
+      await Schedules.escalateLater(
+        session,
+        checkInId: checkInId,
+        stage: 2,
+        delay: Duration(seconds: circle.secondGraceSeconds),
+      );
 
       await _say(
         session,

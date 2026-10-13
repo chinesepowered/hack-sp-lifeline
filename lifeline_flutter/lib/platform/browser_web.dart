@@ -152,6 +152,12 @@ class VoiceRecorder {
       final context = web.AudioContext();
       final analyser = context.createAnalyser()..fftSize = 512;
       context.createMediaStreamSource(stream).connect(analyser);
+      // Chrome only processes nodes connected to the destination, so route
+      // the analyser through a muted gain node (no echo of the mic).
+      final mute = context.createGain()..gain.value = 0;
+      analyser.connect(mute);
+      mute.connect(context.destination);
+      context.resume().toDart.ignore();
       _audioContext = context;
       final buffer = Uint8List(analyser.fftSize);
       final jsBuffer = buffer.toJS;

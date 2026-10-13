@@ -4,7 +4,6 @@ import '../checkins/check_in_service.dart';
 import '../checkins/schedules.dart';
 import '../common/codes.dart';
 import '../common/local_time.dart';
-import '../generated/future_calls.dart';
 import '../generated/protocol.dart';
 import '../realtime/circle_channel.dart';
 import '../voice/voice_catalog.dart';
@@ -275,10 +274,7 @@ abstract final class CircleService {
       (status) => Circle.db.updateRow(session, circle.copyWith(status: status)),
     );
 
-    await session.serverpod.futureCalls
-        .callWithDelay(demoLifetime, identifier: 'demo-cleanup-${circle.id}')
-        .demoCleanup
-        .expire(circle.id!);
+    await Schedules.expireDemoLater(session, circle.id!, demoLifetime);
 
     return DemoSetup(circleId: circle.id!, deviceToken: token);
   }
@@ -298,9 +294,7 @@ abstract final class CircleService {
       where: (t) => t.circleId.equals(circleId),
     );
     for (final checkIn in checkIns) {
-      await session.serverpod.futureCalls.cancel(
-        CheckInService.escalationId(checkIn.id!),
-      );
+      await Schedules.cancelEscalation(session, checkIn.id!);
     }
     // Members, check-ins, alerts, events and devices cascade.
     await Circle.db.deleteRow(session, circle);
