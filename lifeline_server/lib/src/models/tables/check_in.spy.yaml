@@ -1,0 +1,26 @@
+### One "How are you?" prompt and its outcome.
+class: CheckIn
+table: check_in
+fields:
+  circleId: int, relation(parent=circle, onDelete=Cascade)
+  kind: CheckInKind
+  slotId: int?
+  ### The scheduled occurrence this check-in belongs to. Unique per circle,
+  ### which makes the at-least-once scheduled future call idempotent.
+  scheduledFor: DateTime
+  promptedAt: DateTime
+  promptText: String
+  status: CheckInStatus
+  ### 0 = none, 1 = missed (warning), 2 = unresponsive (urgent).
+  escalationStage: int, default=0
+  respondedAt: DateTime?
+  responseMethod: ResponseMethod?
+  transcript: String?
+  triageLevel: TriageLevel?
+  triageReasons: List<String>?
+indexes:
+  check_in_circle_prompted_idx:
+    fields: circleId, promptedAt
+  check_in_occurrence_idx:
+    fields: circleId, scheduledFor
+    unique: true

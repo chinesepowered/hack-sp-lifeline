@@ -1,0 +1,17 @@
+### Entries in a circle's activity timeline.
+enum: EventKind
+values:
+  - circleCreated
+  - memberJoined
+  - devicePaired
+  - checkInSent
+  - checkedInOk
+  - concernReported
+  - helpRequested
+  - checkInMissed
+  - escalated
+  - alertAcknowledged
+  - alertResolved
+  - messageSent
+  - voiceNote
+  - settingsChanged

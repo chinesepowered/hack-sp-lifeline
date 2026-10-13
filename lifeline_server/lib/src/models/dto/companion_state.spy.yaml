@@ -1,0 +1,19 @@
+### What the loved one's companion screen shows, pushed live over a stream.
+class: CompanionState
+fields:
+  circleId: int
+  lovedOneName: String
+  status: CircleStatus
+  activeCheckIn: CheckIn?
+  ### Recent spoken lines. The screen plays any it has not played yet.
+  utterances: List<Utterance>
+  ### The most recent message from the family (last 3 days).
+  latestMessage: Utterance?
+  helpActive: bool
+  helpAcknowledgedBy: String?
+  caregiverNames: List<String>
+  nextCheckInAt: DateTime?
+  utcOffsetMinutes: int
+  serverTime: DateTime
+  ### Base URL of the web server route that serves synthesized speech.
+  voiceBaseUrl: String

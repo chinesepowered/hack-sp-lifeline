@@ -1,0 +1,5 @@
+### A ready-to-explore demo: a circle plus a paired virtual companion screen.
+class: DemoSetup
+fields:
+  circleId: int
+  deviceToken: String

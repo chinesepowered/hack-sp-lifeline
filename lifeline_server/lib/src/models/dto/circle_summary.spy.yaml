@@ -1,0 +1,7 @@
+class: CircleSummary
+fields:
+  circleId: int
+  lovedOneName: String
+  status: CircleStatus
+  myRole: MemberRole
+  isDemo: bool

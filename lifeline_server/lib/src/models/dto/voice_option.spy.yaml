@@ -1,0 +1,6 @@
+### A curated ElevenLabs voice the family can pick for the companion.
+class: VoiceOption
+fields:
+  voiceId: String
+  name: String
+  description: String

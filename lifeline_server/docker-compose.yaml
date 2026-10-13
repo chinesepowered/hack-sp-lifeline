@@ -1,0 +1,30 @@
+services:
+  # Development services
+  postgres:
+    image: ghcr.io/serverpod/postgres:16
+    ports:
+      - "8090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: lifeline
+      POSTGRES_PASSWORD: "J4CHX4Z9jpkfIR5zzFsbB4-ZziiUBSbI"
+    volumes:
+      - lifeline_data:/var/lib/postgresql/data
+
+
+  # Test services
+  postgres_test:
+    image: ghcr.io/serverpod/postgres:16
+    ports:
+      - "9090:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: lifeline_test
+      POSTGRES_PASSWORD: "CeUunFg3QUF8qX-FxNKcN-CucK5GP4Xi"
+    volumes:
+      - lifeline_test_data:/var/lib/postgresql/data
+
+
+volumes:
+  lifeline_data:
+  lifeline_test_data:

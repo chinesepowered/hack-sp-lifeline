@@ -1,0 +1,19 @@
+### Everything a caregiver's dashboard shows, pushed live over a stream.
+class: CircleSnapshot
+fields:
+  circle: Circle
+  me: CircleMember
+  members: List<CircleMember>
+  slots: List<CheckInSlot>
+  activeCheckIn: CheckIn?
+  ### Last 7 days of check-ins, newest first.
+  recentCheckIns: List<CheckIn>
+  openAlerts: List<Alert>
+  recentEvents: List<CircleEvent>
+  recentMessages: List<Utterance>
+  deviceCount: int
+  companionLastSeenAt: DateTime?
+  nextCheckInAt: DateTime?
+  serverTime: DateTime
+  ### Base URL of the web server route that serves synthesized speech.
+  voiceBaseUrl: String

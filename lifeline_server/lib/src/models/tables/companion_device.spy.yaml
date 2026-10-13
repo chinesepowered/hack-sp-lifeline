@@ -1,0 +1,14 @@
+### A tablet paired to a circle. It authenticates with a long random token;
+### only its SHA-256 hash is stored.
+class: CompanionDevice
+table: companion_device
+fields:
+  circleId: int, relation(parent=circle, onDelete=Cascade)
+  tokenHash: String?, scope=serverOnly
+  label: String
+  pairedAt: DateTime, default=now
+  lastSeenAt: DateTime?
+indexes:
+  companion_device_token_idx:
+    fields: tokenHash
+    unique: true

@@ -1,0 +1,19 @@
+### Something a caregiver should act on. Acknowledging tells the loved one
+### that help is coming.
+class: Alert
+table: alert
+fields:
+  circleId: int, relation(parent=circle, onDelete=Cascade)
+  checkInId: int?
+  kind: AlertKind
+  level: AlertLevel
+  title: String
+  detail: String
+  createdAt: DateTime, default=now
+  acknowledgedAt: DateTime?
+  acknowledgedByName: String?
+  resolvedAt: DateTime?
+  resolvedByName: String?
+indexes:
+  alert_circle_idx:
+    fields: circleId, resolvedAt

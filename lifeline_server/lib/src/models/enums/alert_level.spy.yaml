@@ -1,0 +1,4 @@
+enum: AlertLevel
+values:
+  - warning
+  - urgent

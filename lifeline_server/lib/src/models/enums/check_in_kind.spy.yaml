@@ -1,0 +1,5 @@
+### Whether a check-in came from the daily schedule or was started by family.
+enum: CheckInKind
+values:
+  - scheduled
+  - onDemand

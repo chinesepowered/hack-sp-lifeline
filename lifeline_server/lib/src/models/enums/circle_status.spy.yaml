@@ -1,0 +1,15 @@
+### The live, at-a-glance status of a care circle's loved one.
+enum: CircleStatus
+values:
+  ### No check-in has happened yet.
+  - quiet
+  ### The latest check-in was answered and nothing needs attention.
+  - ok
+  ### A check-in prompt is waiting for an answer (within the grace period).
+  - awaiting
+  ### The loved one answered but mentioned something worth a follow-up.
+  - concern
+  ### A check-in went unanswered past the grace period.
+  - missed
+  ### Help was requested, or the loved one is unresponsive. Act now.
+  - alert

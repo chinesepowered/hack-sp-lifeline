@@ -1,0 +1,31 @@
+### A care circle: one loved one, the family who looks out for them, and
+### the companion screen(s) in their home.
+class: Circle
+table: circle
+fields:
+  ### First name the companion uses when speaking, e.g. "Rose".
+  lovedOneName: String
+  ### ElevenLabs voice used on the companion screen.
+  voiceId: String
+  ### Offset of the loved one's local time from UTC, in minutes.
+  utcOffsetMinutes: int
+  ### Seconds to wait for an answer before a check-in counts as missed.
+  graceSeconds: int
+  ### Further seconds before a missed check-in escalates to urgent.
+  secondGraceSeconds: int
+  ### 6-digit code used once to pair the loved one's tablet.
+  pairingCode: String
+  ### Code family members use to join the circle.
+  inviteCode: String
+  status: CircleStatus, default=quiet
+  statusChangedAt: DateTime, default=now
+  ### Demo circles are cleaned up automatically by a future call.
+  isDemo: bool, default=false
+  createdAt: DateTime, default=now
+indexes:
+  circle_pairing_code_idx:
+    fields: pairingCode
+    unique: true
+  circle_invite_code_idx:
+    fields: inviteCode
+    unique: true

@@ -1,0 +1,6 @@
+enum: AlertKind
+values:
+  - missedCheckIn
+  - unresponsive
+  - helpRequested
+  - concern

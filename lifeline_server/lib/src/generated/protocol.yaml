@@ -1,0 +1,34 @@
+anonymousIdp:
+  - login:
+emailIdp:
+  - login:
+  - startRegistration:
+  - verifyRegistrationCode:
+  - finishRegistration:
+  - startPasswordReset:
+  - verifyPasswordResetCode:
+  - finishPasswordReset:
+  - hasAccount:
+jwtRefresh:
+  - refreshAccessToken:
+circle:
+  - voices:
+  - previewVoice:
+  - myCircles:
+  - createCircle:
+  - joinCircle:
+  - createDemo:
+  - snapshot:
+  - watch:
+  - checkInNow:
+  - sendMessage:
+  - acknowledgeAlert:
+  - resolveAlert:
+  - updateSettings:
+  - newPairingCode:
+companion:
+  - pair:
+  - watch:
+  - imOkay:
+  - needHelp:
+  - answerByVoice:

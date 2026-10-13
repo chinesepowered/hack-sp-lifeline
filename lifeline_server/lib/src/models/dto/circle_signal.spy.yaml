@@ -1,0 +1,6 @@
+### Server event posted to a circle's channel whenever its state changes.
+class: CircleSignal
+serverOnly: true
+fields:
+  circleId: int
+  reason: String

@@ -1,0 +1,17 @@
+### A family member or friend in a care circle, linked to a Serverpod auth user.
+class: CircleMember
+table: circle_member
+fields:
+  circleId: int, relation(parent=circle, onDelete=Cascade)
+  ### The Serverpod auth user identifier (UUID) of this member.
+  userIdentifier: String?, scope=serverOnly
+  displayName: String
+  relationship: String?
+  role: MemberRole
+  joinedAt: DateTime, default=now
+indexes:
+  circle_member_unique_idx:
+    fields: circleId, userIdentifier
+    unique: true
+  circle_member_user_idx:
+    fields: userIdentifier

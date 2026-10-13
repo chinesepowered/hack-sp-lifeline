@@ -1,0 +1,8 @@
+enum: LifelineErrorCode
+values:
+  - notFound
+  - notAMember
+  - invalidCode
+  - invalidDevice
+  - invalidInput
+  - voiceUnavailable

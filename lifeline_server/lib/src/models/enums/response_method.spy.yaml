@@ -1,0 +1,5 @@
+### How the loved one answered a check-in.
+enum: ResponseMethod
+values:
+  - button
+  - voice

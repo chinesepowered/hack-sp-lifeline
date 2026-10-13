@@ -1,0 +1,5 @@
+### A typed error sent to the app, e.g. a wrong pairing code.
+exception: LifelineException
+fields:
+  message: String
+  code: LifelineErrorCode

@@ -1,0 +1,10 @@
+### Everything a family can configure for their circle.
+class: CircleSettings
+fields:
+  lovedOneName: String
+  voiceId: String
+  utcOffsetMinutes: int
+  ### Daily check-in times, as minutes after local midnight.
+  slotMinutes: List<int>
+  graceSeconds: int
+  secondGraceSeconds: int

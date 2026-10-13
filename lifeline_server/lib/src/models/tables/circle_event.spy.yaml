@@ -1,0 +1,14 @@
+### An entry in the circle's activity timeline.
+class: CircleEvent
+table: circle_event
+fields:
+  circleId: int, relation(parent=circle, onDelete=Cascade)
+  kind: EventKind
+  title: String
+  detail: String?
+  actorName: String?
+  checkInId: int?
+  createdAt: DateTime, default=now
+indexes:
+  circle_event_circle_idx:
+    fields: circleId, createdAt

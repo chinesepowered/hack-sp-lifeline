@@ -1,0 +1,16 @@
+### A line spoken on the companion screen, voiced by ElevenLabs.
+class: Utterance
+table: utterance
+fields:
+  circleId: int, relation(parent=circle, onDelete=Cascade)
+  kind: UtteranceKind
+  text: String
+  ### Path of the synthesized MP3 under the /voice/ web route, or null if
+  ### synthesis was unavailable (the app then falls back to on-device TTS).
+  audioPath: String?
+  fromName: String?
+  checkInId: int?
+  createdAt: DateTime, default=now
+indexes:
+  utterance_circle_idx:
+    fields: circleId, createdAt

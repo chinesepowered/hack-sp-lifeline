@@ -1,0 +1,18 @@
+# This file configures your Serverpod Cloud project.
+# It is automatically generated and updated by the `scloud` command.
+#
+# Useful commands:
+# - Deploy: `scloud deploy`
+# - Get Help: `scloud help`
+#
+# For full documentation, visit: https://docs.serverpod.dev/cloud
+
+project:
+  projectId: "lifeline"
+  scripts:
+    # Regenerate protocol code and build the Flutter web app (served by the
+    # Serverpod web server via FlutterRoute) before every deploy.
+    pre_deploy:
+      - serverpod generate
+      - serverpod run flutter_build
+    post_deploy: []

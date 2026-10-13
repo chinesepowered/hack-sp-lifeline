@@ -1,0 +1,17 @@
+### Content-addressed cache of ElevenLabs audio stored in Serverpod storage.
+### The same sentence in the same voice is only ever synthesized once.
+class: VoiceClip
+table: voice_clip
+serverOnly: true
+fields:
+  hash: String
+  voiceId: String
+  modelId: String
+  text: String
+  storagePath: String
+  byteLength: int
+  createdAt: DateTime, default=now
+indexes:
+  voice_clip_hash_idx:
+    fields: hash
+    unique: true

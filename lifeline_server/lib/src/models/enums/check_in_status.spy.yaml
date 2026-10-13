@@ -1,0 +1,9 @@
+### Lifecycle of a single check-in prompt.
+enum: CheckInStatus
+values:
+  - pending
+  - ok
+  - concern
+  - help
+  - missed
+  - unresponsive

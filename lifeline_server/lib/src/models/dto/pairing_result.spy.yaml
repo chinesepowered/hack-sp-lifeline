@@ -1,0 +1,6 @@
+class: PairingResult
+fields:
+  ### Secret device token. Shown once; the server only keeps its hash.
+  deviceToken: String
+  circleId: int
+  lovedOneName: String

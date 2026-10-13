@@ -1,0 +1,6 @@
+### What the server heard when the loved one answered by voice.
+class: VoiceReplyResult
+fields:
+  transcript: String
+  triageLevel: TriageLevel
+  reasons: List<String>

@@ -1,0 +1,8 @@
+### Something spoken aloud on the loved one's companion screen.
+enum: UtteranceKind
+values:
+  - prompt
+  - reprompt
+  - reply
+  - familyMessage
+  - notice

@@ -1,0 +1,12 @@
+### A daily check-in time, in the loved one's local time. Each slot is backed
+### by a recurring (cron) future call.
+class: CheckInSlot
+table: check_in_slot
+fields:
+  circleId: int, relation(parent=circle, onDelete=Cascade)
+  ### Minutes after local midnight, e.g. 540 for 09:00.
+  minuteOfDay: int
+  label: String
+indexes:
+  check_in_slot_circle_idx:
+    fields: circleId
