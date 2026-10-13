@@ -1,0 +1,36 @@
+1
+00:00:01,750 --> 00:00:09,456
+Sixteen million older Americans live alone. When one of them falls, the most dangerous part is often how long it takes for anyone to notice.
+
+2
+00:00:09,956 --> 00:00:17,244
+This is Lifeline. Rose's tablet checks in with her every day, and her daughter Sam watches over her from a live dashboard.
+
+3
+00:00:33,020 --> 00:00:42,241
+Rose can tap a button, or just talk. ElevenLabs transcribes her answer, Lifeline flags the pain, and Sam sees it instantly.
+
+4
+00:00:42,541 --> 00:00:44,213
+But what if Rose doesn't answer?
+
+5
+00:00:44,513 --> 00:00:50,861
+A Serverpod future call is already waiting. Lifeline asks again, then escalates to the whole family.
+
+6
+00:01:07,350 --> 00:01:11,713
+Sam taps, I'm on it, and Rose hears that someone is checking on her.
+
+7
+00:01:22,891 --> 00:01:27,672
+Family can also send a message. Rose hears it out loud, with large captions.
+
+8
+00:01:33,016 --> 00:01:49,578
+Under the hood, it's all Serverpod: typed endpoints, real-time streams, future calls for every check-in and escalation, the Postgres ORM, file storage caching each voice clip, and built-in sign-in. And it's live on Serverpod Cloud.
+
+9
+00:01:50,178 --> 00:01:52,947
+Lifeline. Because someone should always notice.
+
