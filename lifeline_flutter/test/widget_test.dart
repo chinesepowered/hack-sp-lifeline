@@ -1,15 +1,15 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility that Flutter provides. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-// import 'package:flutter/material.dart';
-// import 'package:flutter_test/flutter_test.dart';
-//
-// import 'package:PROJECTNAME_flutter/main.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:lifeline_flutter/format.dart';
 
 void main() {
-  // Add your app tests here
+  test('formats times for people, not machines', () {
+    expect(Fmt.minuteOfDay(9 * 60), '9:00 AM');
+    expect(Fmt.minuteOfDay(19 * 60 + 30), '7:30 PM');
+    expect(Fmt.countdown(const Duration(seconds: 75)), '1:15');
+    expect(Fmt.duration(20), '20 seconds');
+    expect(Fmt.duration(900), '15 minutes');
+    final now = DateTime(2026, 10, 13, 12);
+    expect(Fmt.ago(now.subtract(const Duration(seconds: 10)), now), 'just now');
+    expect(Fmt.ago(now.subtract(const Duration(minutes: 5)), now), '5 min ago');
+  });
 }

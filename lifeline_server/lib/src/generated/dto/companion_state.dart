@@ -28,6 +28,8 @@ abstract class CompanionState
     this.latestMessage,
     required this.helpActive,
     this.helpAcknowledgedBy,
+    required this.escalated,
+    this.escalationAcknowledgedBy,
     required this.caregiverNames,
     this.nextCheckInAt,
     required this.utcOffsetMinutes,
@@ -44,6 +46,8 @@ abstract class CompanionState
     _i5xr7ifk.Utterance? latestMessage,
     required bool helpActive,
     String? helpAcknowledgedBy,
+    required bool escalated,
+    String? escalationAcknowledgedBy,
     required List<String> caregiverNames,
     DateTime? nextCheckInAt,
     required int utcOffsetMinutes,
@@ -75,6 +79,9 @@ abstract class CompanionState
         jsonSerialization['helpActive'],
       ),
       helpAcknowledgedBy: jsonSerialization['helpAcknowledgedBy'] as String?,
+      escalated: _is.BoolJsonExtension.fromJson(jsonSerialization['escalated']),
+      escalationAcknowledgedBy:
+          jsonSerialization['escalationAcknowledgedBy'] as String?,
       caregiverNames: _ituap8d4.Protocol().deserialize<List<String>>(
         jsonSerialization['caregiverNames'],
       ),
@@ -105,9 +112,15 @@ abstract class CompanionState
   /// The most recent message from the family (last 3 days).
   _i5xr7ifk.Utterance? latestMessage;
 
+  /// The loved one asked for help and the family hasn't resolved it yet.
   bool helpActive;
 
   String? helpAcknowledgedBy;
+
+  /// Nobody has heard from the loved one and the family was alerted.
+  bool escalated;
+
+  String? escalationAcknowledgedBy;
 
   List<String> caregiverNames;
 
@@ -132,6 +145,8 @@ abstract class CompanionState
     _i5xr7ifk.Utterance? latestMessage,
     bool? helpActive,
     String? helpAcknowledgedBy,
+    bool? escalated,
+    String? escalationAcknowledgedBy,
     List<String>? caregiverNames,
     DateTime? nextCheckInAt,
     int? utcOffsetMinutes,
@@ -150,6 +165,9 @@ abstract class CompanionState
       if (latestMessage != null) 'latestMessage': latestMessage?.toJson(),
       'helpActive': helpActive,
       if (helpAcknowledgedBy != null) 'helpAcknowledgedBy': helpAcknowledgedBy,
+      'escalated': escalated,
+      if (escalationAcknowledgedBy != null)
+        'escalationAcknowledgedBy': escalationAcknowledgedBy,
       'caregiverNames': caregiverNames.toJson(),
       if (nextCheckInAt != null) 'nextCheckInAt': nextCheckInAt?.toJson(),
       'utcOffsetMinutes': utcOffsetMinutes,
@@ -174,6 +192,9 @@ abstract class CompanionState
         'latestMessage': latestMessage?.toJsonForProtocol(),
       'helpActive': helpActive,
       if (helpAcknowledgedBy != null) 'helpAcknowledgedBy': helpAcknowledgedBy,
+      'escalated': escalated,
+      if (escalationAcknowledgedBy != null)
+        'escalationAcknowledgedBy': escalationAcknowledgedBy,
       'caregiverNames': caregiverNames.toJson(),
       if (nextCheckInAt != null) 'nextCheckInAt': nextCheckInAt?.toJson(),
       'utcOffsetMinutes': utcOffsetMinutes,
@@ -200,6 +221,8 @@ class _CompanionStateImpl extends CompanionState {
     _i5xr7ifk.Utterance? latestMessage,
     required bool helpActive,
     String? helpAcknowledgedBy,
+    required bool escalated,
+    String? escalationAcknowledgedBy,
     required List<String> caregiverNames,
     DateTime? nextCheckInAt,
     required int utcOffsetMinutes,
@@ -214,6 +237,8 @@ class _CompanionStateImpl extends CompanionState {
          latestMessage: latestMessage,
          helpActive: helpActive,
          helpAcknowledgedBy: helpAcknowledgedBy,
+         escalated: escalated,
+         escalationAcknowledgedBy: escalationAcknowledgedBy,
          caregiverNames: caregiverNames,
          nextCheckInAt: nextCheckInAt,
          utcOffsetMinutes: utcOffsetMinutes,
@@ -234,6 +259,8 @@ class _CompanionStateImpl extends CompanionState {
     Object? latestMessage = _Undefined,
     bool? helpActive,
     Object? helpAcknowledgedBy = _Undefined,
+    bool? escalated,
+    Object? escalationAcknowledgedBy = _Undefined,
     List<String>? caregiverNames,
     Object? nextCheckInAt = _Undefined,
     int? utcOffsetMinutes,
@@ -256,6 +283,10 @@ class _CompanionStateImpl extends CompanionState {
       helpAcknowledgedBy: helpAcknowledgedBy is String?
           ? helpAcknowledgedBy
           : this.helpAcknowledgedBy,
+      escalated: escalated ?? this.escalated,
+      escalationAcknowledgedBy: escalationAcknowledgedBy is String?
+          ? escalationAcknowledgedBy
+          : this.escalationAcknowledgedBy,
       caregiverNames:
           caregiverNames ?? this.caregiverNames.map((e0) => e0).toList(),
       nextCheckInAt: nextCheckInAt is DateTime?

@@ -131,10 +131,8 @@ abstract final class Snapshots {
       where: (t) => t.circleId.equals(circleId),
     );
 
-    String? acknowledgedBy;
-    for (final alert in urgent) {
-      acknowledgedBy ??= alert.acknowledgedByName;
-    }
+    final help = urgent.where((a) => a.kind == AlertKind.helpRequested);
+    final unresponsive = urgent.where((a) => a.kind == AlertKind.unresponsive);
 
     return CompanionState(
       circleId: circleId,
@@ -143,8 +141,10 @@ abstract final class Snapshots {
       activeCheckIn: active,
       utterances: recent.reversed.toList(),
       latestMessage: latestMessage,
-      helpActive: urgent.isNotEmpty,
-      helpAcknowledgedBy: acknowledgedBy,
+      helpActive: help.isNotEmpty,
+      helpAcknowledgedBy: _firstAcknowledger(help),
+      escalated: unresponsive.isNotEmpty,
+      escalationAcknowledgedBy: _firstAcknowledger(unresponsive),
       caregiverNames: members.map((m) => m.displayName).toList(),
       nextCheckInAt: Schedules.nextCheckInAt(circle, slots, nowUtc: now),
       utcOffsetMinutes: circle.utcOffsetMinutes,
@@ -166,6 +166,13 @@ abstract final class Snapshots {
       port: isDefaultPort ? null : web.publicPort,
       path: '/voice/',
     ).toString();
+  }
+
+  static String? _firstAcknowledger(Iterable<Alert> alerts) {
+    for (final alert in alerts) {
+      if (alert.acknowledgedByName != null) return alert.acknowledgedByName;
+    }
+    return null;
   }
 
   static bool _isActive(CheckIn checkIn) =>

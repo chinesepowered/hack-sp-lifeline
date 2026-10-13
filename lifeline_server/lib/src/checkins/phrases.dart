@@ -43,6 +43,13 @@ abstract final class Phrases {
   static String acknowledged(String name, String helper) =>
       '$name, $helper has seen your alert and is on it. Help is coming.';
 
+  static String checkingOnYou(String name, String helper) =>
+      "$name, $helper knows you haven't answered and is checking on you now. "
+      "If you're okay, please tap the green button.";
+
+  static String willCall(String name, String helper) =>
+      '$name, $helper got your message and will check in with you soon.';
+
   static String familyMessage(String fromName, String text) =>
       'Here is a message from $fromName. $text';
 

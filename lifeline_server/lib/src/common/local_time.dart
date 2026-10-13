@@ -49,12 +49,11 @@ abstract final class LocalTime {
     int minuteOfDay,
     int utcOffsetMinutes, {
     DateTime? nowUtc,
-  }) =>
-      latestOccurrence(
-        minuteOfDay,
-        utcOffsetMinutes,
-        nowUtc: nowUtc,
-      ).add(const Duration(days: 1));
+  }) => latestOccurrence(
+    minuteOfDay,
+    utcOffsetMinutes,
+    nowUtc: nowUtc,
+  ).add(const Duration(days: 1));
 
   /// "Good morning", "Good afternoon" or "Good evening" for a local hour.
   static String greeting(int localHour) {

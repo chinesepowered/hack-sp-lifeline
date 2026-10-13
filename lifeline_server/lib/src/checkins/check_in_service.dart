@@ -120,7 +120,7 @@ abstract final class CheckInService {
           : requestedBy != null
           ? '$requestedBy started a check-in'
           : 'Check-in sent',
-      detail: promptText,
+      detail: '“${promptText.split(' Tap the green').first}”',
       actorName: requestedBy,
       checkInId: checkIn.id,
     );
@@ -213,8 +213,14 @@ abstract final class CheckInService {
         await _event(
           session,
           circleId,
-          answered != null ? EventKind.checkedInOk : EventKind.voiceNote,
-          answered != null ? '$name is OK' : '$name left a voice note',
+          answered != null || method == ResponseMethod.button
+              ? EventKind.checkedInOk
+              : EventKind.voiceNote,
+          answered != null
+              ? '$name is OK'
+              : method == ResponseMethod.button
+              ? '$name says all is well'
+              : '$name left a voice note',
           detail: [
             quote ?? how,
             if (took != null) 'replied in $took',
@@ -372,6 +378,13 @@ abstract final class CheckInService {
         checkInId: checkInId,
       );
     } else {
+      // The urgent alert supersedes the stage-one "hasn't answered" alert.
+      await _resolveAlerts(
+        session,
+        checkInId,
+        {AlertKind.missedCheckIn},
+        by: 'Lifeline',
+      );
       await Alert.db.insertRow(
         session,
         Alert(
@@ -442,10 +455,17 @@ abstract final class CheckInService {
       session,
       circle,
       UtteranceKind.notice,
-      alert.level == AlertLevel.urgent
-          ? Phrases.acknowledged(circle.lovedOneName, helper)
-          : '${circle.lovedOneName}, $helper got your message and will '
-                'check in with you soon.',
+      switch (alert.kind) {
+        AlertKind.helpRequested => Phrases.acknowledged(
+          circle.lovedOneName,
+          helper,
+        ),
+        AlertKind.unresponsive => Phrases.checkingOnYou(
+          circle.lovedOneName,
+          helper,
+        ),
+        _ => Phrases.willCall(circle.lovedOneName, helper),
+      },
       checkInId: alert.checkInId,
     );
   }
@@ -520,7 +540,10 @@ abstract final class CheckInService {
 
   /// The circle status is derived from open alerts and the latest check-in,
   /// and stored on the circle for quick listing.
-  static Future<CircleStatus> deriveStatus(Session session, int circleId) async {
+  static Future<CircleStatus> deriveStatus(
+    Session session,
+    int circleId,
+  ) async {
     final openAlerts = await Alert.db.find(
       session,
       where: (t) => t.circleId.equals(circleId) & t.resolvedAt.equals(null),
@@ -559,19 +582,31 @@ abstract final class CheckInService {
     Session session,
     Circle circle,
     CheckIn checkIn,
-  ) async {
+  ) => _resolveAlerts(
+    session,
+    checkIn.id!,
+    {AlertKind.missedCheckIn, AlertKind.unresponsive},
+    by: circle.lovedOneName,
+  );
+
+  static Future<void> _resolveAlerts(
+    Session session,
+    int checkInId,
+    Set<AlertKind> kinds, {
+    required String by,
+  }) async {
     final alerts = await Alert.db.find(
       session,
       where: (t) =>
-          t.checkInId.equals(checkIn.id) &
+          t.checkInId.equals(checkInId) &
           t.resolvedAt.equals(null) &
-          t.kind.inSet({AlertKind.missedCheckIn, AlertKind.unresponsive}),
+          t.kind.inSet(kinds),
     );
     final now = DateTime.now().toUtc();
     for (final alert in alerts) {
       await Alert.db.updateRow(
         session,
-        alert.copyWith(resolvedAt: now, resolvedByName: circle.lovedOneName),
+        alert.copyWith(resolvedAt: now, resolvedByName: by),
       );
     }
   }

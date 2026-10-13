@@ -1,5 +1,5 @@
 name: lifeline_server
-description: Starting point for a Serverpod server.
+description: Lifeline server - scheduled voice check-ins, escalation and live family dashboards.
 # version: 1.0.0
 # homepage: https://www.example.com
 
@@ -30,13 +30,13 @@ serverpod:
       windows: >-
         (if exist web\app rmdir /S /Q web\app)
         & cd /D ..\lifeline_flutter
-        & set ARGS=web --base-href /
+        & set ARGS=web --base-href / --no-web-resources-cdn --no-wasm-dry-run
         && (call flutter build %ARGS% || (flutter clean && call flutter build %ARGS%))
         && xcopy /E /I /Y build\web ..\lifeline_server\web\app
       posix: |
         rm -rf ../lifeline_server/web/app
         cd ../lifeline_flutter
-        set -- web --base-href / --output ../lifeline_server/web/app
+        set -- web --base-href / --no-web-resources-cdn --no-wasm-dry-run --output ../lifeline_server/web/app
         flutter build "$@" || { flutter clean && flutter build "$@"; }
 
   # Companion Flutter apps that `serverpod start` can launch (Ctrl+R), keyed

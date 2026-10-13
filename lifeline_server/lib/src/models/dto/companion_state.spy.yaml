@@ -9,8 +9,12 @@ fields:
   utterances: List<Utterance>
   ### The most recent message from the family (last 3 days).
   latestMessage: Utterance?
+  ### The loved one asked for help and the family hasn't resolved it yet.
   helpActive: bool
   helpAcknowledgedBy: String?
+  ### Nobody has heard from the loved one and the family was alerted.
+  escalated: bool
+  escalationAcknowledgedBy: String?
   caregiverNames: List<String>
   nextCheckInAt: DateTime?
   utcOffsetMinutes: int

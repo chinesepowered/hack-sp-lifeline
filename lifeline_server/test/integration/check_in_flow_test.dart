@@ -106,45 +106,51 @@ void main() {
       );
     });
 
-    test('only members can see the circle; invite codes let family in', () async {
-      await expectLater(
-        endpoints.circle.snapshot(david, circleId),
-        throwsA(isA<LifelineException>()),
-      );
-      final invite = (await dashboard()).circle.inviteCode;
-      final joined = await endpoints.circle.joinCircle(
-        david,
-        invite,
-        'David',
-        'Son',
-      );
-      expect(joined.members.map((m) => m.displayName), ['Sam', 'David']);
-      final circles = await endpoints.circle.myCircles(david);
-      expect(circles.single.lovedOneName, 'Rose');
-    });
+    test(
+      'only members can see the circle; invite codes let family in',
+      () async {
+        await expectLater(
+          endpoints.circle.snapshot(david, circleId),
+          throwsA(isA<LifelineException>()),
+        );
+        final invite = (await dashboard()).circle.inviteCode;
+        final joined = await endpoints.circle.joinCircle(
+          david,
+          invite,
+          'David',
+          'Son',
+        );
+        expect(joined.members.map((m) => m.displayName), ['Sam', 'David']);
+        final circles = await endpoints.circle.myCircles(david);
+        expect(circles.single.lovedOneName, 'Rose');
+      },
+    );
 
-    test('a check-in is spoken, answered with the button, and cleared', () async {
-      await endpoints.circle.checkInNow(sam, circleId);
+    test(
+      'a check-in is spoken, answered with the button, and cleared',
+      () async {
+        await endpoints.circle.checkInNow(sam, circleId);
 
-      var screen = await companion();
-      expect(screen.activeCheckIn?.status, CheckInStatus.pending);
-      final prompt = screen.utterances.last;
-      expect(prompt.kind, UtteranceKind.prompt);
-      expect(prompt.text, contains('Rose'));
-      expect(prompt.audioPath, endsWith('.mp3'));
-      expect((await dashboard()).circle.status, CircleStatus.awaiting);
+        var screen = await companion();
+        expect(screen.activeCheckIn?.status, CheckInStatus.pending);
+        final prompt = screen.utterances.last;
+        expect(prompt.kind, UtteranceKind.prompt);
+        expect(prompt.text, contains('Rose'));
+        expect(prompt.audioPath, endsWith('.mp3'));
+        expect((await dashboard()).circle.status, CircleStatus.awaiting);
 
-      await endpoints.companion.imOkay(sessionBuilder, deviceToken);
+        await endpoints.companion.imOkay(sessionBuilder, deviceToken);
 
-      final snapshot = await dashboard();
-      expect(snapshot.circle.status, CircleStatus.ok);
-      expect(snapshot.activeCheckIn, isNull);
-      expect(snapshot.recentCheckIns.first.status, CheckInStatus.ok);
-      expect(snapshot.recentEvents.first.title, 'Rose is OK');
-      screen = await companion();
-      expect(screen.activeCheckIn, isNull);
-      expect(screen.utterances.last.kind, UtteranceKind.reply);
-    });
+        final snapshot = await dashboard();
+        expect(snapshot.circle.status, CircleStatus.ok);
+        expect(snapshot.activeCheckIn, isNull);
+        expect(snapshot.recentCheckIns.first.status, CheckInStatus.ok);
+        expect(snapshot.recentEvents.first.title, 'Rose is OK');
+        screen = await companion();
+        expect(screen.activeCheckIn, isNull);
+        expect(screen.utterances.last.kind, UtteranceKind.reply);
+      },
+    );
 
     test('an unanswered check-in escalates in two stages', () async {
       await endpoints.circle.checkInNow(sam, circleId);
@@ -178,8 +184,22 @@ void main() {
       );
       snapshot = await dashboard();
       expect(snapshot.circle.status, CircleStatus.alert);
-      expect(snapshot.openAlerts.first.level, AlertLevel.urgent);
-      expect(snapshot.openAlerts.first.kind, AlertKind.unresponsive);
+      // The urgent alert supersedes the stage-one alert.
+      expect(snapshot.openAlerts.single.level, AlertLevel.urgent);
+      expect(snapshot.openAlerts.single.kind, AlertKind.unresponsive);
+      var screen = await companion();
+      expect(screen.escalated, isTrue);
+      expect(screen.helpActive, isFalse);
+      expect(screen.activeCheckIn, isNotNull);
+
+      await endpoints.circle.acknowledgeAlert(
+        sam,
+        circleId,
+        snapshot.openAlerts.single.id!,
+      );
+      screen = await companion();
+      expect(screen.escalationAcknowledgedBy, 'Sam');
+      expect(screen.utterances.last.text, contains('checking on you'));
 
       // A late answer clears the "missed" and "not responding" alerts.
       await endpoints.companion.imOkay(sessionBuilder, deviceToken);
@@ -262,22 +282,25 @@ void main() {
       expect(voice.spoken.last, startsWith('Here is a message from Sam.'));
     });
 
-    test('the scheduled future call starts one check-in per occurrence', () async {
-      final slotId = (await dashboard()).slots.first.id!;
-      await endpoints.futureCalls.checkIn.scheduledCheckIn(
-        sessionBuilder,
-        circleId,
-        slotId,
-      );
-      await endpoints.futureCalls.checkIn.scheduledCheckIn(
-        sessionBuilder,
-        circleId,
-        slotId,
-      );
-      final checkIns = (await dashboard()).recentCheckIns;
-      expect(checkIns, hasLength(1));
-      expect(checkIns.single.kind, CheckInKind.scheduled);
-    });
+    test(
+      'the scheduled future call starts one check-in per occurrence',
+      () async {
+        final slotId = (await dashboard()).slots.first.id!;
+        await endpoints.futureCalls.checkIn.scheduledCheckIn(
+          sessionBuilder,
+          circleId,
+          slotId,
+        );
+        await endpoints.futureCalls.checkIn.scheduledCheckIn(
+          sessionBuilder,
+          circleId,
+          slotId,
+        );
+        final checkIns = (await dashboard()).recentCheckIns;
+        expect(checkIns, hasLength(1));
+        expect(checkIns.single.kind, CheckInKind.scheduled);
+      },
+    );
 
     test('settings can be updated', () async {
       final updated = await endpoints.circle.updateSettings(
@@ -304,7 +327,8 @@ void main() {
       final snapshot = await endpoints.circle.snapshot(judge, demo.circleId);
       expect(snapshot.circle.isDemo, isTrue);
       expect(snapshot.deviceCount, 1);
-      expect(snapshot.recentCheckIns, hasLength(12));
+      // Up to 7 occurrences per slot, depending on the time of day.
+      expect(snapshot.recentCheckIns.length, inInclusiveRange(12, 14));
       expect(snapshot.circle.status, CircleStatus.ok);
 
       final screen = await endpoints.companion

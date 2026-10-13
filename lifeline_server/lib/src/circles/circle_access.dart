@@ -27,7 +27,8 @@ abstract final class CircleAccess {
     final userId = userIdentifier(session);
     final member = await CircleMember.db.findFirstRow(
       session,
-      where: (t) => t.circleId.equals(circleId) & t.userIdentifier.equals(userId),
+      where: (t) =>
+          t.circleId.equals(circleId) & t.userIdentifier.equals(userId),
     );
     if (member == null) {
       throw LifelineException(

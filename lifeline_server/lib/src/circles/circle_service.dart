@@ -165,9 +165,9 @@ abstract final class CircleService {
     });
     await _scheduleAll(session, updated);
 
-    final times = ([...settings.slotMinutes]..sort())
-        .map(LocalTime.label)
-        .join(', ');
+    final times = ([
+      ...settings.slotMinutes,
+    ]..sort()).map(LocalTime.label).join(', ');
     await CircleEvent.db.insertRow(
       session,
       CircleEvent(
@@ -351,7 +351,7 @@ abstract final class CircleService {
     );
     final now = DateTime.now().toUtc();
     final history = <CheckIn>[];
-    for (var day = 6; day >= 1; day--) {
+    for (var day = 6; day >= 0; day--) {
       for (final slot in slots) {
         final at = LocalTime.latestOccurrence(
           slot.minuteOfDay,
@@ -359,6 +359,9 @@ abstract final class CircleService {
           nowUtc: now,
         ).subtract(Duration(days: day));
         final concern = day == 3 && slot.minuteOfDay < 12 * 60;
+        if (day == 0 && at.isAfter(now.subtract(const Duration(minutes: 30)))) {
+          continue; // Too recent to look like history.
+        }
         final voice = day.isEven;
         history.add(
           CheckIn(
