@@ -8,9 +8,18 @@ import 'package:lifeline_client/lifeline_client.dart';
 /// value. Reconnects with exponential backoff when the connection drops
 /// (sleeping laptop, flaky Wi-Fi, a new server deploy).
 class LiveStream<T> extends ChangeNotifier {
-  LiveStream(this._open);
+  LiveStream(this._open, {this.poll});
 
   final Stream<T> Function() _open;
+
+  /// Fetches the same value over plain HTTP. Used when WebSockets keep
+  /// failing, e.g. behind a hospital or corporate proxy that blocks them.
+  final Future<T> Function()? poll;
+
+  /// True while values arrive by polling instead of the stream.
+  bool polling = false;
+  int _failures = 0;
+  Timer? _pollTimer;
 
   T? value;
   Object? error;
@@ -36,28 +45,71 @@ class LiveStream<T> extends ChangeNotifier {
         connected = true;
         fatal = false;
         _attempt = 0;
+        _failures = 0;
+        _stopPolling();
         _notify();
       },
       onError: (Object e) {
-        error = e;
-        connected = false;
         fatal = _isFatal(e);
+        if (!polling) {
+          error = e;
+          connected = false;
+        }
         _notify();
-        if (!fatal) _scheduleRetry();
+        if (!fatal) _streamFailed();
       },
       onDone: () {
-        connected = false;
+        if (!polling) connected = false;
         _notify();
-        _scheduleRetry();
+        _streamFailed();
       },
       cancelOnError: true,
     );
   }
 
+  void _streamFailed() {
+    _failures++;
+    if (poll != null && _failures >= 2) _startPolling();
+    _scheduleRetry();
+  }
+
+  void _startPolling() {
+    if (_pollTimer != null || _disposed) return;
+    polling = true;
+    Future<void> tick() async {
+      try {
+        final next = await poll!();
+        if (_disposed || !polling) return;
+        value = next;
+        error = null;
+        connected = true;
+        _notify();
+      } catch (e) {
+        if (_isFatal(e)) {
+          fatal = true;
+          error = e;
+          _stopPolling();
+        }
+        _notify();
+      }
+    }
+
+    tick();
+    _pollTimer = Timer.periodic(const Duration(seconds: 2), (_) => tick());
+  }
+
+  void _stopPolling() {
+    _pollTimer?.cancel();
+    _pollTimer = null;
+    polling = false;
+  }
+
   void _scheduleRetry() {
     if (_disposed) return;
     _retry?.cancel();
-    final millis = math.min(15000, 500 * math.pow(2, _attempt).toInt());
+    // While polling works, retry the stream less often.
+    final cap = polling ? 60000 : 15000;
+    final millis = math.min(cap, 500 * math.pow(2, _attempt).toInt());
     _attempt++;
     _retry = Timer(Duration(milliseconds: millis), _connect);
   }
@@ -83,6 +135,7 @@ class LiveStream<T> extends ChangeNotifier {
   void dispose() {
     _disposed = true;
     _retry?.cancel();
+    _pollTimer?.cancel();
     _subscription?.cancel();
     super.dispose();
   }

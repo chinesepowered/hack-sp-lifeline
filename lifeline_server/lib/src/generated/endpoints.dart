@@ -638,6 +638,25 @@ class Endpoints extends _is.EndpointDispatch {
                     params['label'],
                   ),
         ),
+        'state': _is.MethodConnector(
+          name: 'state',
+          params: {
+            'deviceToken': _is.ParameterDescription(
+              name: 'deviceToken',
+              type: _is.getType<String>(),
+              nullable: false,
+            ),
+          },
+          call:
+              (
+                _is.Session session,
+                Map<String, dynamic> params,
+              ) async =>
+                  (endpoints['companion'] as _izr1micu.CompanionEndpoint).state(
+                    session,
+                    params['deviceToken'],
+                  ),
+        ),
         'imOkay': _is.MethodConnector(
           name: 'imOkay',
           params: {

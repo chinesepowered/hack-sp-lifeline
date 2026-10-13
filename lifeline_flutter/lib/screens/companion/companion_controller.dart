@@ -13,9 +13,13 @@ import '../../widgets/common.dart';
 /// lines out loud (one at a time, with captions), and sending answers.
 class CompanionController extends ChangeNotifier {
   CompanionController(this.deviceToken) {
-    live = LiveStream(() => client.companion.watch(deviceToken))
-      ..addListener(_onState)
-      ..start();
+    live =
+        LiveStream(
+            () => client.companion.watch(deviceToken),
+            poll: () => client.companion.state(deviceToken),
+          )
+          ..addListener(_onState)
+          ..start();
   }
 
   final String deviceToken;

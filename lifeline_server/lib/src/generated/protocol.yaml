@@ -29,6 +29,7 @@ circle:
 companion:
   - pair:
   - watch:
+  - state:
   - imOkay:
   - needHelp:
   - answerByVoice:

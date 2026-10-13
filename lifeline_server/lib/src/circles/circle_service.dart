@@ -250,7 +250,8 @@ abstract final class CircleService {
         voiceId: VoiceCatalog.defaultVoiceId,
         utcOffsetMinutes: utcOffsetMinutes,
         slotMinutes: [9 * 60, 19 * 60],
-        graceSeconds: 20,
+        // Shortened so a missed check-in escalates while you watch.
+        graceSeconds: 30,
         secondGraceSeconds: 20,
       ),
       userIdentifier: userIdentifier,

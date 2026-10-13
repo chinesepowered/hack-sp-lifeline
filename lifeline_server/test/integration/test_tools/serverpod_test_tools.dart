@@ -1143,6 +1143,37 @@ class _CompanionEndpoint {
     return _localTestStreamManager.outputStreamController.stream;
   }
 
+  _ida.Future<_ixyvk72h.CompanionState> state(
+    _ist.TestSessionBuilder sessionBuilder,
+    String deviceToken,
+  ) async {
+    return _ist.callAwaitableFunctionAndHandleExceptions(() async {
+      var _localUniqueSession =
+          (sessionBuilder as _ist.InternalTestSessionBuilder).internalBuild(
+            endpoint: 'companion',
+            method: 'state',
+          );
+      try {
+        var _localCallContext = await _endpointDispatch.getMethodCallContext(
+          createSessionCallback: (_) => _localUniqueSession,
+          endpointPath: 'companion',
+          methodName: 'state',
+          parameters: _ist.testObjectToJson({'deviceToken': deviceToken}),
+          serializationManager: _serializationManager,
+        );
+        var _localReturnValue =
+            await (_localCallContext.method.call(
+                  _localUniqueSession,
+                  _localCallContext.arguments,
+                )
+                as _ida.Future<_ixyvk72h.CompanionState>);
+        return _localReturnValue;
+      } finally {
+        await _localUniqueSession.close();
+      }
+    });
+  }
+
   _ida.Future<void> imOkay(
     _ist.TestSessionBuilder sessionBuilder,
     String deviceToken,

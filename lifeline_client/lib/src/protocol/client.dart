@@ -482,6 +482,14 @@ class EndpointCompanion extends _isc.EndpointRef {
         {},
       );
 
+  /// The same state as [watch], for networks that block WebSockets.
+  _ida.Future<_izo99o3f.CompanionState> state(String deviceToken) =>
+      caller.callServerEndpoint<_izo99o3f.CompanionState>(
+        'companion',
+        'state',
+        {'deviceToken': deviceToken},
+      );
+
   /// The big green button.
   _ida.Future<void> imOkay(String deviceToken) =>
       caller.callServerEndpoint<void>(

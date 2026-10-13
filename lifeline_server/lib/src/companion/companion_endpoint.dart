@@ -39,6 +39,17 @@ class CompanionEndpoint extends Endpoint {
     }
   }
 
+  /// The same state as [watch], for networks that block WebSockets.
+  Future<CompanionState> state(Session session, String deviceToken) async {
+    var device = await CircleAccess.requireDevice(session, deviceToken);
+    final seen = device.lastSeenAt;
+    if (seen == null ||
+        DateTime.now().toUtc().difference(seen).inSeconds > 30) {
+      device = await _touch(session, device);
+    }
+    return Snapshots.forDevice(session, device);
+  }
+
   /// The big green button.
   Future<void> imOkay(Session session, String deviceToken) async {
     final circle = await _circleFor(session, deviceToken);

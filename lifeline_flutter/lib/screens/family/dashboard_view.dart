@@ -36,9 +36,13 @@ class _DashboardViewState extends State<DashboardView> {
   @override
   void initState() {
     super.initState();
-    _live = LiveStream(() => client.circle.watch(widget.circleId))
-      ..addListener(_onUpdate)
-      ..start();
+    _live =
+        LiveStream(
+            () => client.circle.watch(widget.circleId),
+            poll: () => client.circle.snapshot(widget.circleId),
+          )
+          ..addListener(_onUpdate)
+          ..start();
     client.circle.voices().then((v) {
       if (mounted) setState(() => _voices = v);
     }, onError: (_) {});

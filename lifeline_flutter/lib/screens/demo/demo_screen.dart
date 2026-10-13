@@ -251,7 +251,7 @@ class _Intro extends StatelessWidget {
                 const SizedBox(height: 10),
                 const Text(
                   'Creates a private sandbox circle that deletes itself after '
-                  '12 hours. Escalation timers are shortened to 20 seconds.',
+                  '12 hours. Escalation timers are shortened to seconds.',
                   style: TextStyle(fontSize: 13, color: LifelineColors.muted),
                 ),
               ],
