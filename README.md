@@ -53,35 +53,22 @@ Today's options all depend on the wrong person acting at the wrong moment:
 Lifeline is one **Serverpod 4** backend and one Flutter app with two faces (the loved one's tablet and the family dashboard), deployed on **Serverpod Cloud**. Serverpod isn't a thin API layer here: scheduling, real-time push, storage, auth and the web server are all load-bearing.
 
 ```mermaid
-flowchart LR
-  subgraph home["Rose's home"]
-    T["Companion tablet<br/>(Flutter web)"]
-  end
-  subgraph family["Family, anywhere"]
-    D["Family dashboard<br/>(Flutter web)"]
-  end
-  subgraph cloud["Serverpod Cloud"]
+flowchart TB
+  T["Rose's tablet<br/>(Flutter web)"]
+  D["Family dashboards<br/>(Flutter web)"]
+  subgraph sp["Serverpod Cloud"]
     direction TB
-    API["Endpoints<br/>CircleEndpoint · CompanionEndpoint"]
-    RT["Streaming methods<br/>+ server events"]
-    FC["Future calls<br/>cron check-ins · escalation · cleanup"]
-    DB[("Postgres<br/>ORM + migrations")]
-    ST["File storage<br/>voice clips"]
-    WEB["Web server (Relic)<br/>FlutterRoute · /voice/:file"]
+    API["Serverpod endpoints + streaming methods<br/>CircleEndpoint · CompanionEndpoint"]
+    FC["Future calls<br/>daily check-ins · escalation"]
+    EV["Server events<br/>push every change"]
+    DB[("Postgres<br/>ORM · migrations")]
+    ST["File storage<br/>+ /voice web route"]
   end
   EL["ElevenLabs<br/>TTS · Scribe STT"]
-
-  T <-- "companion.watch()" --> RT
-  D <-- "circle.watch()" --> RT
-  T -- "imOkay · needHelp · answerByVoice" --> API
-  D -- "checkInNow · sendMessage · acknowledgeAlert" --> API
-  API --> DB
-  FC --> DB
-  FC --> API
-  API -- "speak / transcribe" --> EL
-  API --> ST
-  T -- "GET /voice/&lt;sha256&gt;.mp3" --> WEB
-  WEB --> ST
+  T <-- "imOkay · answerByVoice<br/>companion.watch()" --> API
+  D <-- "checkInNow · acknowledgeAlert<br/>circle.watch()" --> API
+  API --> FC & EV & DB & ST
+  API <-- "speak · transcribe" --> EL
 ```
 
 ### A check-in, end to end
